@@ -1,2 +1,3 @@
-# open-web-ui
-OpenWebUI Docker Compose Files
+# OpenWebUI
+
+OpenWebUI Docker Compose files
