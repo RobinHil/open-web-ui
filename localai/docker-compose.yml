@@ -1,0 +1,40 @@
+services:
+  webui:
+    image: ghcr.io/open-webui/open-webui:main
+    networks:
+      - network
+    restart: always
+    ports:
+      - "3000:8080"
+    volumes:
+      - open-webui_data:/app/backend/data
+    depends_on:
+      - localai
+    environment:
+      USE_CUDA_DOCKER: true
+      OPENAI_API_BASE_URLS: http://localai:8080/v1
+
+  localai:
+    image: localai/localai:latest-aio-gpu-nvidia-cuda-12
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: ["gpu"]
+              count: all
+    networks:
+      - network
+    restart: always
+    ports:
+      - "3100:8080"
+    volumes:
+      - localai_models:/build/models
+
+volumes:
+  localai_models:
+  open-webui_data:
+
+networks:
+  network:
+    driver: bridge

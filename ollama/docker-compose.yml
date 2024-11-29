@@ -1,0 +1,38 @@
+services:
+  webui:
+    image: ghcr.io/open-webui/open-webui:main
+    networks:
+      - network
+    restart: always
+    ports:
+      - "3000:8080"
+    volumes:
+      - open-webui_data:/app/backend/data
+    depends_on:
+      - ollama
+    environment:
+      USE_CUDA_DOCKER: true
+      OLLAMA_BASE_URLS: http://ollama:11434
+
+  ollama:
+    image: ollama/ollama:latest
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: ["gpu"]
+              count: all
+    networks:
+      - network
+    restart: always
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  ollama_data:
+  open-webui_data:
+
+networks:
+  network:
+    driver: bridge
